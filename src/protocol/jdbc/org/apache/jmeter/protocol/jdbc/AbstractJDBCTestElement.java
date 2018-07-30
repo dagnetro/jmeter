@@ -181,7 +181,14 @@ public abstract class AbstractJDBCTestElement extends AbstractTestElement implem
                 int[] out = setArguments(cstmt);
                 // A CallableStatement can return more than 1 ResultSets
                 // plus a number of update counts.
+                /*
                 boolean hasResultSet = cstmt.execute();
+                sample.latencyEnd();
+                String sb = resultSetsToString(cstmt,hasResultSet, out);
+                return sb.getBytes(ENCODING);
+                */
+                boolean hasResultSet = true;
+                cstmt.executeQuery();
                 sample.latencyEnd();
                 String sb = resultSetsToString(cstmt,hasResultSet, out);
                 return sb.getBytes(ENCODING);
