@@ -282,14 +282,14 @@ public class StatGraphVisualizer extends AbstractVisualizer implements Clearable
                         MessageFormat.format(
                                 JMeterUtils.getResString(
                                         "aggregate_report_xx_pct1_line"),
-                                new Object[] { PCT1_LABEL }),
+                                PCT1_LABEL),
                         false, green));
         eltList.add(
                 new BarGraph(
                         MessageFormat.format(
                                 JMeterUtils.getResString(
                                         "aggregate_report_xx_pct2_line"),
-                                new Object[] { PCT2_LABEL }),
+                                PCT2_LABEL),
                         false, yellow));
         
         eltList.add(
@@ -297,7 +297,7 @@ public class StatGraphVisualizer extends AbstractVisualizer implements Clearable
                         MessageFormat.format(
                                 JMeterUtils.getResString(
                                         "aggregate_report_xx_pct3_line"),
-                                new Object[] { PCT3_LABEL }),
+                                PCT3_LABEL),
                         false, purple));
         eltList.add(
                 new BarGraph(JMeterUtils.getResString("aggregate_report_min"),
@@ -343,7 +343,7 @@ public class StatGraphVisualizer extends AbstractVisualizer implements Clearable
      * @return ObjectTableModel
      */
     static ObjectTableModel createObjectTableModel() {
-        return new ObjectTableModel(COLUMNS,
+        return new ObjectTableModel(getLabels(COLUMNS),
                 SamplingStatCalculator.class,
                 new Functor[] {
                 new Functor("getLabel"),                    //$NON-NLS-1$
@@ -513,7 +513,7 @@ public class StatGraphVisualizer extends AbstractVisualizer implements Clearable
         myJTable.setRowSorter(new ObjectTableSorter(model).fixLastRow());
         JMeterUtils.applyHiDPI(myJTable);
         // Fix centering of titles
-        HeaderAsPropertyRendererWrapper.setupDefaultRenderer(myJTable, getColumnsMsgParameters());
+        HeaderAsPropertyRendererWrapper.setupDefaultRenderer(myJTable);
         myJTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
         RendererUtils.applyRenderers(myJTable, getRenderers());
         myScrollPane = new JScrollPane(myJTable);

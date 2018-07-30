@@ -239,7 +239,7 @@ public class HTTPHC4Impl extends HTTPHCAbstractImpl {
             } else {
                 try {
                     requestURI = new URI(request.getRequestLine().getUri());
-                } catch (final URISyntaxException ignore) {
+                } catch (final URISyntaxException ignore) { // NOSONAR
                     // NOOP
                 }
             }
@@ -803,7 +803,7 @@ public class HTTPHC4Impl extends HTTPHCAbstractImpl {
     protected HTTPSampleResult createSampleResult(URL url, String method) {
         HTTPSampleResult res = new HTTPSampleResult();
 
-        res.setSampleLabel(url.toString()); // May be replaced later
+        res.setSampleLabel(this.testElement.getName());
         res.setHTTPMethod(method);
         res.setURL(url);
         

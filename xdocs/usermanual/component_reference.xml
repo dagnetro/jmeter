@@ -2344,11 +2344,11 @@ This would be the case if the Regular Expression returned no matches.</note>
 
 <properties>
         <property name="Name" required="No">Descriptive name for this controller that is shown in the tree.</property>
-        <property name="Input variable prefix" required="Yes">Prefix for the variable names to be used as input.</property>
+        <property name="Input variable prefix" required="No">Prefix for the variable names to be used as input. Defaults to an empty string as prefix.</property>
         <property name="Start index for loop" required="No">Start index (exclusive) for loop over variables (first element is at start index + 1)</property>
         <property name="End index for loop" required="No">End index (inclusive) for loop over variables</property>
-        <property name="Output variable" required="Yes">
-                The name of the variable which can be used in the loop for replacement in the samplers</property>
+        <property name="Output variable" required="No">
+                The name of the variable which can be used in the loop for replacement in the samplers. Defaults to an empty variable name, which is most probably not wanted.</property>
         <property required="Yes" name="Use Separator">If not checked, the "<code>_</code>" separator is omitted.</property>
 </properties>
 
@@ -4216,9 +4216,10 @@ to use a variable other than a property as a value for the minimum or maximum. I
   If not specified, the default is to generate the number using <code>Long.toString()</code></property>
   <property name="Minimum Value" required="Yes">The minimum value (<code>long</code>) of the generated random number.</property>
   <property name="Maximum Value" required="Yes">The maximum value (<code>long</code>) of the generated random number.</property>
-  <property name="Random Seed" required="No">The seed for the random number generator. Default is the current time in milliseconds. 
+  <property name="Random Seed" required="No">The seed for the random number generator. 
   If you use the same seed value with Per Thread set to <code>true</code>, you will get the same value for each Thread as per 
   <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Random.html" >Random</a> class.
+  If no seed is set, Default constructor of Random will be used.
   </property>
   <property name="Per Thread(User)?" required="Yes">If <code>False</code>, the generator is shared between all threads in the thread group.
   If <code>True</code>, then each thread has its own random generator.</property>
@@ -5794,7 +5795,7 @@ extracting the node as text or attribute value and store the result into the giv
     </property>
     <property name="Default Value" required="yes">Default value returned when no match found. 
     It is also returned if the node has no value and the fragment option is not selected.</property>
-    <property name="Namespaces list" required="No">List of namespaces aliases you want to use to parse the document, one line per declaration.
+    <property name="Namespaces aliases list" required="No">List of namespaces aliases you want to use to parse the document, one line per declaration.
     You must specify them as follow : <code>prefix=namespace</code>. This implementation makes it easier to
     use namespaces than with the old XPathExtractor version.</property>
    </properties>
