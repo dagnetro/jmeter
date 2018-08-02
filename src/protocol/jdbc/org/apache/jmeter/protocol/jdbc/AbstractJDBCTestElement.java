@@ -164,6 +164,7 @@ public abstract class AbstractJDBCTestElement extends AbstractTestElement implem
         log.debug("executing jdbc:{}", getQuery());
         // Based on query return value, get results
         String currentQueryType = getQueryType();
+        Object arguments;
         if (SELECT.equals(currentQueryType)) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.setQueryTimeout(getIntegerQueryTimeout());
@@ -177,22 +178,45 @@ public abstract class AbstractJDBCTestElement extends AbstractTestElement implem
                 }
             }
         } else if (CALLABLE.equals(currentQueryType)) {
+
+            ResultSet rs = null;
             try (CallableStatement cstmt = getCallableStatement(conn)) {
-                int[] out = setArguments(cstmt);
-                // A CallableStatement can return more than 1 ResultSets
-                // plus a number of update counts.
-                /*
-                boolean hasResultSet = cstmt.execute();
-                sample.latencyEnd();
-                String sb = resultSetsToString(cstmt,hasResultSet, out);
-                return sb.getBytes(ENCODING);
-                */
-                boolean hasResultSet = true;
-                cstmt.executeQuery();
-                sample.latencyEnd();
-                String sb = resultSetsToString(cstmt,hasResultSet, out);
-                return sb.getBytes(ENCODING);
+                arguments = null;
+                if (getQueryArguments().trim().length() == 0) {
+                    arguments = new String[0];
+                }
+                arguments = CSVSaveService.csvSplitString(getQueryArguments(), ',');
+                for (int i = 0; i < ((String[]) arguments).length; i++) {
+                    cstmt.setString(i + 1, ((String[]) arguments)[i]);
+                }
+                cstmt.registerOutParameter(((String[]) arguments).length + 1, 10);
+                rs = cstmt.executeQuery();
+                
+                String s = customRstoString(rs);
+
+                JMeterVariables jmvars = getThreadContext().getVariables();
+                jmvars.putObject("rec", s);
+
+                return s.getBytes(ENCODING);
+                
+                //here start old version
+//                int[] out = setArguments(cstmt);
+//                // A CallableStatement can return more than 1 ResultSets
+//                // plus a number of update counts.
+//                /*
+//                boolean hasResultSet = cstmt.execute();
+//                sample.latencyEnd();
+//                String sb = resultSetsToString(cstmt,hasResultSet, out);
+//                return sb.getBytes(ENCODING);
+//                */
+//                boolean hasResultSet = true;
+//                cstmt.executeQuery();
+//                sample.latencyEnd();
+//                String sb = resultSetsToString(cstmt, hasResultSet, out);
+//                dagTest = "ceva";
+//                return sb.getBytes(ENCODING);
             }
+            finally {}
         } else if (UPDATE.equals(currentQueryType)) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.setQueryTimeout(getIntegerQueryTimeout());
@@ -587,6 +611,33 @@ public abstract class AbstractJDBCTestElement extends AbstractTestElement implem
         }
 
         return sb.toString();
+    }
+    
+    private String customRstoString(ResultSet rs) throws SQLException, IOException {
+        ResultSetMetaData rsmd = rs.getMetaData();
+        String result = "";
+
+        int numCols = rsmd.getColumnCount();
+        for (int i = 1; i <= numCols; i++) {
+            if (i > 1) {
+                result = result + ",";
+            }
+            result = result + rsmd.getColumnLabel(i) + " - ";
+            result = result + rsmd.getColumnTypeName(i);
+        }
+        result = result + "\n";
+        while (rs.next()) {
+            for (int i = 1; i <= numCols; i++) {
+                if (i > 1) {
+                    result = result + ",";
+                }
+                Object obj = rs.getObject(i);
+
+                result = result + (obj != null ? obj.toString() : "null");
+            }
+            result = result + "\n";
+        }
+        return result;
     }
 
     public static void close(Connection c) {
